@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "portfolio",
+			"path": "."
+		},
+		{
+			"name": "src",
+			"path": "../Downloads/Minimal Portfolio Website Design/src"
+		}
+	],
+	"settings": {}
+}
