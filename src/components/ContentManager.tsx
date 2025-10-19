@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, Download, Upload, RotateCcw, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Download, Upload, RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -9,65 +9,98 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from './ui/dialog';
 import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
-import { portfolioStorage, generateId, PortfolioProfile, Section, PortfolioItem } from '../utils/portfolioData';
+import { portfolioService, PortfolioProfile } from '../services/portfolioService';
+import { Database } from '../types/database';
+
+type Section = Database['public']['Tables']['sections']['Row'] & {
+  items: Database['public']['Tables']['portfolio_items']['Row'][]
+}
+type PortfolioItem = Database['public']['Tables']['portfolio_items']['Row']
 
 interface ContentManagerProps {
   onDataUpdate: () => void;
 }
 
 export function ContentManager({ onDataUpdate }: ContentManagerProps) {
-  const [data, setData] = useState<PortfolioProfile>(portfolioStorage.getData());
-  const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
-  const [editingSection, setEditingSection] = useState<Section | null>(null);
+  const [data, setData] = useState<PortfolioProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [_editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
+  const [_editingSection, setEditingSection] = useState<Section | null>(null);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false);
   const [isSectionDialogOpen, setIsSectionDialogOpen] = useState(false);
   const [importExportDialog, setImportExportDialog] = useState<'import' | 'export' | null>(null);
   const [importText, setImportText] = useState('');
 
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      const portfolioData = await portfolioService.getProfile();
+      setData(portfolioData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setData(portfolioStorage.getData());
+    loadData();
   }, []);
 
-  const saveData = (newData: PortfolioProfile) => {
-    portfolioStorage.saveData(newData);
-    setData(newData);
-    onDataUpdate();
+  const handleProfileUpdate = async (name: string, tagline: string) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.updateProfile({ name, tagline });
+      await loadData();
+      onDataUpdate();
+      setIsProfileDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
-  const handleProfileUpdate = (name: string, tagline: string) => {
-    const newData = { ...data, name, tagline };
-    saveData(newData);
-    setIsProfileDialogOpen(false);
-  };
-
-  const handleSectionUpdate = (section: Section) => {
-    const newData = {
-      ...data,
-      sections: data.sections.map(s => s.id === section.id ? section : s)
-    };
-    saveData(newData);
-    setEditingSection(null);
+  const handleSectionUpdate = async (section: Section) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.updateSection(section.id, section);
+      await loadData();
+      onDataUpdate();
+      setEditingSection(null);
+    } catch (error) {
+      console.error('Error updating section:', error);
+    }
     setIsSectionDialogOpen(false);
   };
 
-  const handleSectionAdd = (section: Omit<Section, 'id'>) => {
-    const newSection = { ...section, id: generateId() };
-    const newData = {
-      ...data,
-      sections: [...data.sections, newSection]
-    };
-    saveData(newData);
-    setIsSectionDialogOpen(false);
+  const handleSectionAdd = async (section: Omit<Section, 'id' | 'created_at' | 'updated_at'>) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.createSection({
+        ...section,
+        profile_id: data.id
+      });
+      await loadData();
+      onDataUpdate();
+      setIsSectionDialogOpen(false);
+    } catch (error) {
+      console.error('Error creating section:', error);
+    }
   };
 
-  const handleSectionDelete = (sectionId: string) => {
-    const newData = {
-      ...data,
-      sections: data.sections.filter(s => s.id !== sectionId)
-    };
-    saveData(newData);
+  const handleSectionDelete = async (sectionId: string) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.deleteSection(sectionId);
+      await loadData();
+      onDataUpdate();
+    } catch (error) {
+      console.error('Error deleting section:', error);
+    }
   };
 
   const handleItemUpdate = (sectionId: string, item: PortfolioItem) => {
@@ -141,6 +174,33 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
       onDataUpdate();
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading content manager...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Failed to load portfolio data</p>
+          <button 
+            onClick={loadData}
+            className="mt-4 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-8">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronRight, ExternalLink, Calendar, MapPin, Code, Mail, Github, Linkedin, Maximize2, X } from 'lucide-react';
-import { portfolioStorage, PortfolioProfile, Section, PortfolioItem } from '../utils/portfolioData';
+import { ExternalLink, Calendar, MapPin, Maximize2, X } from 'lucide-react';
+import { portfolioService, PortfolioProfile } from '../services/portfolioService';
 import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -9,8 +9,9 @@ interface ColumnNavigationProps {
 }
 
 export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
-  const [portfolioData, setPortfolioData] = useState<PortfolioProfile>(portfolioStorage.getData());
-  const portfolioSections = portfolioData.sections;
+  const [portfolioData, setPortfolioData] = useState<PortfolioProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const portfolioSections = portfolioData?.sections || [];
   const [selectedSection, setSelectedSection] = useState('about');
   const [selectedItem, setSelectedItem] = useState('intro');
   const [focusedSection, setFocusedSection] = useState<string | null>(null);
@@ -25,6 +26,32 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
 
   const currentSection = portfolioSections.find(section => section.id === selectedSection);
   const currentItem = currentSection?.items.find(item => item.id === selectedItem);
+
+  const loadPortfolioData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await portfolioService.getProfile();
+      if (data) {
+        setPortfolioData(data);
+        // Set default selections if they exist
+        if (data.sections.length > 0) {
+          const firstSection = data.sections[0];
+          setSelectedSection(firstSection.id);
+          if (firstSection.items.length > 0) {
+            setSelectedItem(firstSection.items[0].id);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading portfolio data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPortfolioData();
+  }, [refreshTrigger]);
 
   const handleSectionSelect = (sectionId: string) => {
     setSelectedSection(sectionId);
@@ -49,7 +76,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
     }
   };
 
-  const getItemIcon = (type: string) => {
+  const getItemIcon = (_type: string) => {
     return (
       <div className="w-4 h-4 relative" aria-hidden="true">
         <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
@@ -230,6 +257,33 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
     };
   }, [isExpanded]);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!portfolioData) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Failed to load portfolio data</p>
+          <button 
+            onClick={loadPortfolioData}
+            className="mt-4 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Skip Navigation Links */}
@@ -263,7 +317,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 {portfolioSections.map((section, index) => (
                   <li key={section.id}>
                     <button
-                      ref={(el) => sectionRefs.current[section.id] = el}
+                      ref={(el) => { sectionRefs.current[section.id] = el; }}
                       onClick={() => handleSectionSelect(section.id)}
                       onKeyDown={(e) => handleSectionKeyDown(e, section.id)}
                       onFocus={() => setFocusedSection(section.id)}
@@ -305,7 +359,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                     {currentSection.items.map((item, index) => (
                       <li key={item.id}>
                         <button
-                          ref={(el) => itemRefs.current[item.id] = el}
+                          ref={(el) => { itemRefs.current[item.id] = el; }}
                           onClick={() => handleItemSelect(item.id)}
                           onKeyDown={(e) => handleItemKeyDown(e, item.id)}
                           onFocus={() => setFocusedItem(item.id)}

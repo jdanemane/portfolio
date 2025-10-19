@@ -1,5 +1,4 @@
-import { ChevronRight, ChevronDown, Folder, File, Image, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronRight, ChevronDown, File, Image, ExternalLink } from 'lucide-react';
 
 export interface FileSystemItem {
   id: string;
