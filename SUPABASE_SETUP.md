@@ -15,7 +15,7 @@ This is a portfolio website with a Supabase backend CMS integration. The project
 ### 1. Create a Supabase Project
 
 1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Note down your project URL and anon key from the project settings
+2. Note down your project URL and API key from the project settings
 
 ### 2. Set Up Environment Variables
 
@@ -27,7 +27,7 @@ This is a portfolio website with a Supabase backend CMS integration. The project
 2. Fill in your Supabase credentials in `.env.local`:
    ```
    VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_SUPABASE_ANON_KEY=your_supabase_api_key
    ```
 
 ### 3. Set Up the Database
@@ -108,7 +108,7 @@ Make sure to:
 
 1. **Blank page**: Check that your environment variables are set correctly
 2. **Database errors**: Ensure the schema has been applied to your Supabase project
-3. **Authentication issues**: Verify your Supabase URL and anon key
+3. **Authentication issues**: Verify your Supabase URL and API key
 
 ### Getting Help
 

@@ -1,8 +1,3 @@
--- Enable Row Level Security
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
-ALTER TABLE portfolio_items ENABLE ROW LEVEL SECURITY;
-
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -40,6 +35,11 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Enable Row Level Security
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE portfolio_items ENABLE ROW LEVEL SECURITY;
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_sections_profile_id ON sections(profile_id);
