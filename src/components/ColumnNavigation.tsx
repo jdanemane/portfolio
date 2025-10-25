@@ -223,7 +223,8 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
 
   // Refresh data when trigger changes
   useEffect(() => {
-    setPortfolioData(portfolioStorage.getData());
+    const newData = portfolioStorage.getData();
+    setPortfolioData(newData as PortfolioProfile | null);
   }, [refreshTrigger]);
 
   // Focus management effects
