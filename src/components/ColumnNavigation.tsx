@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Calendar, MapPin, Maximize2, X } from 'lucide-react';
 import { portfolioService, PortfolioProfile } from '../services/portfolioService';
-import { portfolioStorage } from '../utils/portfolioData';
 import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -223,8 +222,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
 
   // Refresh data when trigger changes
   useEffect(() => {
-    const newData = portfolioStorage.getData();
-    setPortfolioData(newData as PortfolioProfile | null);
+    loadPortfolioData();
   }, [refreshTrigger]);
 
   // Focus management effects
