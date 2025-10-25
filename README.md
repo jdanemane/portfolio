@@ -8,4 +8,4 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
-  
+  # Trigger deployment Sat Oct 25 22:22:29 CEST 2025
