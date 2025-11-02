@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   details TEXT,
   content TEXT,
   url TEXT,
+  image_url TEXT,
   tech TEXT[],
   order_index INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,

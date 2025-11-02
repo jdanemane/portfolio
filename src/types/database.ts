@@ -63,6 +63,7 @@ export interface Database {
           details?: string
           content?: string
           url?: string
+          image_url?: string
           tech?: string[]
           order_index: number
           created_at: string
@@ -80,6 +81,7 @@ export interface Database {
           details?: string
           content?: string
           url?: string
+          image_url?: string
           tech?: string[]
           order_index: number
           created_at?: string
@@ -97,6 +99,7 @@ export interface Database {
           details?: string
           content?: string
           url?: string
+          image_url?: string
           tech?: string[]
           order_index?: number
           created_at?: string

@@ -548,6 +548,7 @@ function ItemForm({
     details: initialData?.details || '',
     content: initialData?.content || '',
     url: initialData?.url || '',
+    image_url: initialData?.image_url || '',
     tech: initialData?.tech?.join(', ') || ''
   });
 
@@ -663,6 +664,19 @@ function ItemForm({
           onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
           placeholder="https://..."
         />
+      </div>
+
+      <div>
+        <Label htmlFor="item-image-url">Image URL</Label>
+        <Input
+          id="item-image-url"
+          value={formData.image_url}
+          onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+          placeholder="https://... or Supabase Storage URL"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          URL to the project image. Can be a Supabase Storage URL or external URL.
+        </p>
       </div>
 
       <DialogFooter>

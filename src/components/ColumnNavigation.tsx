@@ -3,6 +3,7 @@ import { ExternalLink, Calendar, MapPin, Maximize2, X } from 'lucide-react';
 import { portfolioService, PortfolioProfile } from '../services/portfolioService';
 import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface ColumnNavigationProps {
   refreshTrigger?: number;
@@ -484,6 +485,19 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 
                 <p id="detail-description" className="text-[rgba(10,10,10,0.7)] leading-[1.625]">{currentItem.description}</p>
               </header>
+
+              {currentItem.image_url && (
+                <section aria-labelledby="image-heading" className="w-full">
+                  <h2 id="image-heading" className="sr-only">Project Image</h2>
+                  <div className="w-full rounded-lg overflow-hidden shadow-sm">
+                    <ImageWithFallback
+                      src={currentItem.image_url}
+                      alt={`${currentItem.title} project image`}
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+                </section>
+              )}
 
               {currentItem.details && (
                 <section aria-labelledby="details-heading">
