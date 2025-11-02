@@ -391,32 +391,30 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                         >
                           <div className="flex items-start gap-3">
                             {(() => {
-                              // Try multiple ways to access image_url
-                              const imageUrl = (item as any).image_url || 
-                                            (item as any).imageUrl || 
-                                            item.image_url ||
-                                            '';
-                              const hasImage = imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '';
+                              // Direct access - try all possible paths
+                              const imageUrl = item.image_url || (item as any).image_url || '';
+                              const hasImage = Boolean(imageUrl && typeof imageUrl === 'string' && imageUrl.trim());
                               
-                              // Debug log
-                              if (!hasImage && item.title === 'Min første rejse') {
-                                console.log('Min første rejse - No image found:', {
-                                  direct: item.image_url,
-                                  any: (item as any).image_url,
-                                  fullItem: item
+                              // Always log for Min første rejse to debug
+                              if (item.title === 'Min første rejse') {
+                                console.log('Min første rejse thumbnail check:', {
+                                  imageUrl,
+                                  hasImage,
+                                  itemImageUrl: item.image_url,
+                                  itemKeys: Object.keys(item)
                                 });
                               }
                               
                               if (hasImage) {
                                 return (
-                                  <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative border-2 border-blue-500">
-                                    <ImageWithFallback
+                                  <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100">
+                                    <img
                                       src={imageUrl}
                                       alt={`${item.title} thumbnail`}
-                                      className="absolute inset-0 w-full h-full object-cover"
-                                      style={{ width: '64px', height: '64px', display: 'block' }}
+                                      className="w-full h-full object-cover"
                                       onError={(e) => {
                                         console.error('Image failed to load:', imageUrl, e);
+                                        (e.target as HTMLImageElement).style.display = 'none';
                                       }}
                                       onLoad={() => {
                                         console.log('Image loaded successfully:', imageUrl);
