@@ -407,15 +407,24 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                               
                               if (hasImage) {
                                 return (
-                                  <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative">
+                                  <div 
+                                    className="flex-shrink-0 rounded-md overflow-hidden bg-gray-100 relative"
+                                    style={{ 
+                                      width: '64px', 
+                                      height: '64px',
+                                      minWidth: '64px',
+                                      minHeight: '64px'
+                                    }}
+                                  >
                                     <img
                                       src={imageUrl}
                                       alt={`${item.title} thumbnail`}
-                                      className="absolute inset-0 w-full h-full object-cover"
+                                      className="w-full h-full object-cover"
                                       style={{ 
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover'
+                                        width: '64px',
+                                        height: '64px',
+                                        objectFit: 'cover',
+                                        display: 'block'
                                       }}
                                       onError={(e) => {
                                         console.error('Image failed to load:', imageUrl, e);
