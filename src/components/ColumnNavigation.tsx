@@ -374,11 +374,12 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                         >
                           <div className="flex items-start gap-3">
                             {item.image_url ? (
-                              <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100">
+                              <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative">
                                 <ImageWithFallback
                                   src={item.image_url}
                                   alt={`${item.title} thumbnail`}
-                                  className="w-full h-full object-cover"
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                  style={{ width: '64px', height: '64px' }}
                                 />
                               </div>
                             ) : (
