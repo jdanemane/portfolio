@@ -28,6 +28,13 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
   const currentSection = portfolioSections.find(section => section.id === selectedSection);
   const currentItem = currentSection?.items.find(item => item.id === selectedItem);
 
+  // Debug: Log image URLs (remove in production)
+  useEffect(() => {
+    if (currentItem) {
+      console.log('Current item:', currentItem.title, 'Image URL:', currentItem.image_url);
+    }
+  }, [currentItem]);
+
   const loadPortfolioData = async () => {
     try {
       setIsLoading(true);
@@ -373,13 +380,13 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            {item.image_url ? (
+                            {item.image_url && item.image_url.trim() !== '' ? (
                               <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative">
                                 <ImageWithFallback
                                   src={item.image_url}
                                   alt={`${item.title} thumbnail`}
                                   className="absolute inset-0 w-full h-full object-cover"
-                                  style={{ width: '64px', height: '64px' }}
+                                  style={{ width: '64px', height: '64px', display: 'block' }}
                                 />
                               </div>
                             ) : (
@@ -497,7 +504,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 <p id="detail-description" className="text-[rgba(10,10,10,0.7)] leading-[1.625]">{currentItem.description}</p>
               </header>
 
-              {currentItem.image_url && (
+              {currentItem.image_url && currentItem.image_url.trim() !== '' && (
                 <section aria-labelledby="image-heading" className="w-full">
                   <h2 id="image-heading" className="sr-only">Project Image</h2>
                   <div className="w-full rounded-lg overflow-hidden shadow-md border border-[rgba(10,10,10,0.05)]">
@@ -505,6 +512,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                       src={currentItem.image_url}
                       alt={`${currentItem.title} project image`}
                       className="w-full h-auto object-cover"
+                      style={{ display: 'block' }}
                     />
                   </div>
                 </section>
