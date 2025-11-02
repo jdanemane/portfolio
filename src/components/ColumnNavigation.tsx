@@ -373,9 +373,19 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-1">
-                              {getItemIcon(item.type)}
-                            </div>
+                            {item.image_url ? (
+                              <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100">
+                                <ImageWithFallback
+                                  src={item.image_url}
+                                  alt={`${item.title} thumbnail`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex-shrink-0 mt-1">
+                                {getItemIcon(item.type)}
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-sm mb-1 text-neutral-950 leading-5">{item.title}</h3>
                               <p className="text-xs text-[rgba(10,10,10,0.6)] leading-4">{item.description}</p>
@@ -489,7 +499,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
               {currentItem.image_url && (
                 <section aria-labelledby="image-heading" className="w-full">
                   <h2 id="image-heading" className="sr-only">Project Image</h2>
-                  <div className="w-full rounded-lg overflow-hidden shadow-sm">
+                  <div className="w-full rounded-lg overflow-hidden shadow-md border border-[rgba(10,10,10,0.05)]">
                     <ImageWithFallback
                       src={currentItem.image_url}
                       alt={`${currentItem.title} project image`}
