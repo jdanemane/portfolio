@@ -28,12 +28,22 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
   const currentSection = portfolioSections.find(section => section.id === selectedSection);
   const currentItem = currentSection?.items.find(item => item.id === selectedItem);
 
-  // Debug: Log image URLs (remove in production)
+  // Debug: Log image URLs and item structure (remove in production)
   useEffect(() => {
     if (currentItem) {
-      console.log('Current item:', currentItem.title, 'Image URL:', currentItem.image_url);
+      console.log('Current item:', currentItem.title);
+      console.log('Image URL:', currentItem.image_url);
+      console.log('Full item:', currentItem);
     }
-  }, [currentItem]);
+    // Also log all items to see image_urls
+    if (currentSection) {
+      console.log('All items in section:', currentSection.items.map(i => ({ 
+        title: i.title, 
+        image_url: i.image_url,
+        hasImage: !!i.image_url 
+      })));
+    }
+  }, [currentItem, currentSection]);
 
   const loadPortfolioData = async () => {
     try {
@@ -380,20 +390,47 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            {item.image_url && item.image_url.trim() !== '' ? (
-                              <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative">
-                                <ImageWithFallback
-                                  src={item.image_url}
-                                  alt={`${item.title} thumbnail`}
-                                  className="absolute inset-0 w-full h-full object-cover"
-                                  style={{ width: '64px', height: '64px', display: 'block' }}
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex-shrink-0 mt-1">
-                                {getItemIcon(item.type)}
-                              </div>
-                            )}
+                            {(() => {
+                              // Try multiple ways to access image_url
+                              const imageUrl = (item as any).image_url || 
+                                            (item as any).imageUrl || 
+                                            item.image_url ||
+                                            '';
+                              const hasImage = imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '';
+                              
+                              // Debug log
+                              if (!hasImage && item.title === 'Min første rejse') {
+                                console.log('Min første rejse - No image found:', {
+                                  direct: item.image_url,
+                                  any: (item as any).image_url,
+                                  fullItem: item
+                                });
+                              }
+                              
+                              if (hasImage) {
+                                return (
+                                  <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-gray-100 relative border-2 border-blue-500">
+                                    <ImageWithFallback
+                                      src={imageUrl}
+                                      alt={`${item.title} thumbnail`}
+                                      className="absolute inset-0 w-full h-full object-cover"
+                                      style={{ width: '64px', height: '64px', display: 'block' }}
+                                      onError={(e) => {
+                                        console.error('Image failed to load:', imageUrl, e);
+                                      }}
+                                      onLoad={() => {
+                                        console.log('Image loaded successfully:', imageUrl);
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div className="flex-shrink-0 mt-1">
+                                  {getItemIcon(item.type)}
+                                </div>
+                              );
+                            })()}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-sm mb-1 text-neutral-950 leading-5">{item.title}</h3>
                               <p className="text-xs text-[rgba(10,10,10,0.6)] leading-4">{item.description}</p>
