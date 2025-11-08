@@ -60,3 +60,4 @@ JOIN sections s ON s.profile_id = p.id
 LEFT JOIN portfolio_items pi ON pi.section_id = s.id
 GROUP BY p.name, s.title, s.order_index
 ORDER BY s.order_index;
+
