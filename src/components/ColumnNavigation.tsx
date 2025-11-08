@@ -3,6 +3,7 @@ import { ExternalLink, Calendar, MapPin, Maximize2, X } from 'lucide-react';
 import { portfolioService, PortfolioProfile } from '../services/portfolioService';
 import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface ColumnNavigationProps {
   refreshTrigger?: number;
@@ -26,6 +27,23 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
 
   const currentSection = portfolioSections.find(section => section.id === selectedSection);
   const currentItem = currentSection?.items.find(item => item.id === selectedItem);
+
+  // Debug: Log image URLs and item structure (remove in production)
+  useEffect(() => {
+    if (currentItem) {
+      console.log('Current item:', currentItem.title);
+      console.log('Image URL:', currentItem.image_url);
+      console.log('Full item:', currentItem);
+    }
+    // Also log all items to see image_urls
+    if (currentSection) {
+      console.log('All items in section:', currentSection.items.map(i => ({ 
+        title: i.title, 
+        image_url: i.image_url,
+        hasImage: !!i.image_url 
+      })));
+    }
+  }, [currentItem, currentSection]);
 
   const loadPortfolioData = async () => {
     try {
@@ -372,9 +390,59 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-1">
-                              {getItemIcon(item.type)}
-                            </div>
+                            {(() => {
+                              // Direct access - try all possible paths
+                              const imageUrl = item.image_url || (item as any).image_url || '';
+                              const hasImage = Boolean(imageUrl && typeof imageUrl === 'string' && imageUrl.trim());
+                              
+                              // Always log for Min første rejse to debug
+                              if (item.title === 'Min første rejse') {
+                                console.log('Min første rejse thumbnail check:', {
+                                  imageUrl,
+                                  hasImage,
+                                  itemImageUrl: item.image_url,
+                                  itemKeys: Object.keys(item)
+                                });
+                              }
+                              
+                              if (hasImage) {
+                                return (
+                                  <div 
+                                    className="flex-shrink-0 rounded-md overflow-hidden bg-gray-100 relative"
+                                    style={{ 
+                                      width: '64px', 
+                                      height: '64px',
+                                      minWidth: '64px',
+                                      minHeight: '64px'
+                                    }}
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={`${item.title} thumbnail`}
+                                      className="w-full h-full object-cover"
+                                      style={{ 
+                                        width: '64px',
+                                        height: '64px',
+                                        objectFit: 'cover',
+                                        display: 'block'
+                                      }}
+                                      onError={(e) => {
+                                        console.error('Image failed to load:', imageUrl, e);
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                      onLoad={() => {
+                                        console.log('Image loaded successfully:', imageUrl);
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div className="flex-shrink-0 mt-1">
+                                  {getItemIcon(item.type)}
+                                </div>
+                              );
+                            })()}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-sm mb-1 text-neutral-950 leading-5">{item.title}</h3>
                               <p className="text-xs text-[rgba(10,10,10,0.6)] leading-4">{item.description}</p>
@@ -484,6 +552,20 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 
                 <p id="detail-description" className="text-[rgba(10,10,10,0.7)] leading-[1.625]">{currentItem.description}</p>
               </header>
+
+              {currentItem.image_url && currentItem.image_url.trim() !== '' && (
+                <section aria-labelledby="image-heading" className="w-full">
+                  <h2 id="image-heading" className="sr-only">Project Image</h2>
+                  <div className="w-full rounded-lg overflow-hidden shadow-md border border-[rgba(10,10,10,0.05)]">
+                    <ImageWithFallback
+                      src={currentItem.image_url}
+                      alt={`${currentItem.title} project image`}
+                      className="w-full h-auto object-cover"
+                      style={{ display: 'block' }}
+                    />
+                  </div>
+                </section>
+              )}
 
               {currentItem.details && (
                 <section aria-labelledby="details-heading">

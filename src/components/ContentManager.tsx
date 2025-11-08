@@ -103,51 +103,52 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
     }
   };
 
-  const handleItemUpdate = (sectionId: string, item: PortfolioItem) => {
-    const newData = {
-      ...data,
-      sections: data.sections.map(section =>
-        section.id === sectionId
-          ? {
-              ...section,
-              items: section.items.map(i => i.id === item.id ? item : i)
-            }
-          : section
-      )
-    };
-    saveData(newData);
-    setEditingItem(null);
-    setIsItemDialogOpen(false);
+  const handleItemUpdate = async (sectionId: string, item: PortfolioItem) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.updatePortfolioItem(item.id, item);
+      await loadData();
+      onDataUpdate();
+      setEditingItem(null);
+      setIsItemDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating item:', error);
+    }
   };
 
-  const handleItemAdd = (sectionId: string, item: Omit<PortfolioItem, 'id'>) => {
-    const newItem = { ...item, id: generateId() };
-    const newData = {
-      ...data,
-      sections: data.sections.map(section =>
-        section.id === sectionId
-          ? { ...section, items: [...section.items, newItem] }
-          : section
-      )
-    };
-    saveData(newData);
-    setIsItemDialogOpen(false);
+  const handleItemAdd = async (sectionId: string, item: Omit<PortfolioItem, 'id' | 'created_at' | 'updated_at'>) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.createPortfolioItem({
+        ...item,
+        section_id: sectionId
+      });
+      await loadData();
+      onDataUpdate();
+      setIsItemDialogOpen(false);
+    } catch (error) {
+      console.error('Error creating item:', error);
+    }
   };
 
-  const handleItemDelete = (sectionId: string, itemId: string) => {
-    const newData = {
-      ...data,
-      sections: data.sections.map(section =>
-        section.id === sectionId
-          ? { ...section, items: section.items.filter(i => i.id !== itemId) }
-          : section
-      )
-    };
-    saveData(newData);
+  const handleItemDelete = async (sectionId: string, itemId: string) => {
+    if (!data) return;
+    
+    try {
+      await portfolioService.deletePortfolioItem(itemId);
+      await loadData();
+      onDataUpdate();
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
   };
 
   const handleExport = () => {
-    const jsonData = portfolioStorage.exportData();
+    if (!data) return;
+    
+    const jsonData = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -159,20 +160,14 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
   };
 
   const handleImport = () => {
-    if (portfolioStorage.importData(importText)) {
-      setData(portfolioStorage.getData());
-      onDataUpdate();
-      setImportText('');
-      setImportExportDialog(null);
-    }
+    // Import functionality removed - use Supabase directly
+    alert('Import functionality is not available. Please use Supabase to manage your data directly.');
+    setImportExportDialog(null);
   };
 
   const handleReset = () => {
-    if (confirm('Are you sure you want to reset all data to defaults? This cannot be undone.')) {
-      portfolioStorage.resetToDefault();
-      setData(portfolioStorage.getData());
-      onDataUpdate();
-    }
+    // Reset functionality removed - use Supabase to manage data
+    alert('Reset functionality is not available. Please use Supabase to manage your data directly.');
   };
 
   if (isLoading) {
@@ -548,6 +543,7 @@ function ItemForm({
     details: initialData?.details || '',
     content: initialData?.content || '',
     url: initialData?.url || '',
+    image_url: initialData?.image_url || '',
     tech: initialData?.tech?.join(', ') || ''
   });
 
@@ -555,7 +551,7 @@ function ItemForm({
     const item = {
       ...formData,
       tech: formData.tech ? formData.tech.split(',').map(t => t.trim()).filter(Boolean) : undefined,
-      id: initialData?.id || generateId()
+      id: initialData?.id || crypto.randomUUID()
     };
     onSave(item);
   };
@@ -663,6 +659,19 @@ function ItemForm({
           onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
           placeholder="https://..."
         />
+      </div>
+
+      <div>
+        <Label htmlFor="item-image-url">Image URL</Label>
+        <Input
+          id="item-image-url"
+          value={formData.image_url}
+          onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+          placeholder="https://... or Supabase Storage URL"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          URL to the project image. Can be a Supabase Storage URL or external URL.
+        </p>
       </div>
 
       <DialogFooter>
