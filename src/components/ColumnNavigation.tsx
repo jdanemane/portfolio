@@ -4,6 +4,7 @@ import { portfolioService, PortfolioProfile } from '../services/portfolioService
 import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import ReactMarkdown from 'react-markdown';
 
 interface ColumnNavigationProps {
   refreshTrigger?: number;
@@ -570,14 +571,18 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
               {currentItem.details && (
                 <section aria-labelledby="details-heading">
                   <h2 id="details-heading" className="sr-only">Additional Details</h2>
-                  <p className="leading-[1.625] text-[rgba(10,10,10,0.8)]">{currentItem.details}</p>
+                  <div className="markdown-content leading-[1.625] text-[rgba(10,10,10,0.8)]">
+                    <ReactMarkdown>{currentItem.details}</ReactMarkdown>
+                  </div>
                 </section>
               )}
 
               {currentItem.content && (
                 <section aria-labelledby="content-heading">
                   <h2 id="content-heading" className="sr-only">Content</h2>
-                  <p className="leading-[1.625] text-[rgba(10,10,10,0.8)]">{currentItem.content}</p>
+                  <div className="markdown-content leading-[1.625] text-[rgba(10,10,10,0.8)]">
+                    <ReactMarkdown>{currentItem.content}</ReactMarkdown>
+                  </div>
                 </section>
               )}
 
