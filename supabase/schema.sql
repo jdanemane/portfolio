@@ -49,13 +49,17 @@ CREATE INDEX IF NOT EXISTS idx_portfolio_items_section_id ON portfolio_items(sec
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_order ON portfolio_items(order_index);
 
 -- Create updated_at trigger function
+-- SET search_path ensures consistent behavior regardless of caller's search_path
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
-    NEW.updated_at = timezone('utc'::text, now());
+    NEW.updated_at = pg_catalog.timezone('utc'::text, pg_catalog.now());
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 -- Create triggers for updated_at
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles
