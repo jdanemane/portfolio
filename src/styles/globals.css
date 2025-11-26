@@ -1,3 +1,4 @@
+/* Tailwind CSS v4 custom variant - linter may not recognize this at-rule */
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -192,6 +193,15 @@ html {
 /* Markdown Content Styles */
 .markdown-content {
   color: rgba(10, 10, 10, 0.8);
+  width: 100%;
+  overflow: visible;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: block;
+}
+
+.markdown-content * {
+  max-width: 100%;
 }
 
 .markdown-content > *:first-child {
@@ -202,61 +212,67 @@ html {
   margin-bottom: 0;
 }
 
-/* Headings */
-.markdown-content h1 {
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-medium);
-  line-height: 1.5;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-  color: rgba(10, 10, 10, 0.95);
+/* Headings - Increased specificity to override base typography */
+.markdown-content h1,
+div.markdown-content h1 {
+  font-size: 1.5rem !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.5 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+  color: rgba(10, 10, 10, 0.95) !important;
 }
 
-.markdown-content h2 {
-  font-size: 1.25rem;
-  font-weight: var(--font-weight-medium);
-  line-height: 1.5;
-  margin-top: 1.25rem;
-  margin-bottom: 0.625rem;
-  color: rgba(10, 10, 10, 0.95);
+.markdown-content h2,
+div.markdown-content h2 {
+  font-size: 1.25rem !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.5 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.625rem !important;
+  color: rgba(10, 10, 10, 0.95) !important;
 }
 
-.markdown-content h3 {
-  font-size: 1.125rem;
-  font-weight: var(--font-weight-medium);
-  line-height: 1.5;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: rgba(10, 10, 10, 0.9);
+.markdown-content h3,
+div.markdown-content h3 {
+  font-size: 1.125rem !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.5 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: rgba(10, 10, 10, 0.9) !important;
 }
 
-.markdown-content h4 {
-  font-size: 1rem;
-  font-weight: var(--font-weight-medium);
-  line-height: 1.5;
-  margin-top: 0.875rem;
-  margin-bottom: 0.5rem;
-  color: rgba(10, 10, 10, 0.9);
+.markdown-content h4,
+div.markdown-content h4 {
+  font-size: 1rem !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.5 !important;
+  margin-top: 0.875rem !important;
+  margin-bottom: 0.5rem !important;
+  color: rgba(10, 10, 10, 0.9) !important;
 }
 
-.markdown-content h5 {
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-medium);
-  line-height: 1.5;
-  margin-top: 0.75rem;
-  margin-bottom: 0.5rem;
-  color: rgba(10, 10, 10, 0.85);
+.markdown-content h5,
+div.markdown-content h5 {
+  font-size: 0.875rem !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.5 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: rgba(10, 10, 10, 0.85) !important;
 }
 
-.markdown-content h6 {
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-normal);
-  line-height: 1.5;
-  margin-top: 0.75rem;
-  margin-bottom: 0.5rem;
-  color: rgba(10, 10, 10, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.markdown-content h6,
+div.markdown-content h6 {
+  font-size: 0.875rem !important;
+  font-weight: var(--font-weight-normal) !important;
+  line-height: 1.5 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: rgba(10, 10, 10, 0.8) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
 /* Paragraphs */

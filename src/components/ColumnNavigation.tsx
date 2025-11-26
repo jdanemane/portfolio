@@ -5,6 +5,7 @@ import svgPaths from '../imports/svg-h24saejzqe';
 import { motion, AnimatePresence } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface ColumnNavigationProps {
   refreshTrigger?: number;
@@ -34,6 +35,13 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
     if (currentItem) {
       console.log('Current item:', currentItem.title);
       console.log('Image URL:', currentItem.image_url);
+      console.log('Details length:', currentItem.details?.length);
+      console.log('Content length:', currentItem.content?.length);
+      console.log('Details preview:', currentItem.details?.substring(0, 100));
+      console.log('Content preview:', currentItem.content?.substring(0, 100));
+      console.log('Content type:', typeof currentItem.content);
+      console.log('Content is string:', typeof currentItem.content === 'string');
+      console.log('ReactMarkdown imported:', typeof ReactMarkdown);
       console.log('Full item:', currentItem);
     }
     // Also log all items to see image_urls
@@ -572,7 +580,19 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 <section aria-labelledby="details-heading">
                   <h2 id="details-heading" className="sr-only">Additional Details</h2>
                   <div className="markdown-content leading-[1.625] text-[rgba(10,10,10,0.8)]">
-                    <ReactMarkdown>{currentItem.details}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({node, ...props}) => <h1 {...props} />,
+                        h2: ({node, ...props}) => <h2 {...props} />,
+                        h3: ({node, ...props}) => <h3 {...props} />,
+                        h4: ({node, ...props}) => <h4 {...props} />,
+                        h5: ({node, ...props}) => <h5 {...props} />,
+                        h6: ({node, ...props}) => <h6 {...props} />,
+                      }}
+                    >
+                      {String(currentItem.details || '')}
+                    </ReactMarkdown>
                   </div>
                 </section>
               )}
@@ -581,7 +601,19 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                 <section aria-labelledby="content-heading">
                   <h2 id="content-heading" className="sr-only">Content</h2>
                   <div className="markdown-content leading-[1.625] text-[rgba(10,10,10,0.8)]">
-                    <ReactMarkdown>{currentItem.content}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({node, ...props}) => <h1 {...props} />,
+                        h2: ({node, ...props}) => <h2 {...props} />,
+                        h3: ({node, ...props}) => <h3 {...props} />,
+                        h4: ({node, ...props}) => <h4 {...props} />,
+                        h5: ({node, ...props}) => <h5 {...props} />,
+                        h6: ({node, ...props}) => <h6 {...props} />,
+                      }}
+                    >
+                      {String(currentItem.content || '')}
+                    </ReactMarkdown>
                   </div>
                 </section>
               )}

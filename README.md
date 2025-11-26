@@ -7,7 +7,7 @@ This is a code bundle for Minimal Portfolio Website Design. The original project
 
 Run `npm i` to install the dependencies.
 
-Run `npm run dev` to start the development server.
+Run `npm run dev` to start the development server. The development server will be available at `http://localhost:3000`.
 
 ## Deployment
 
