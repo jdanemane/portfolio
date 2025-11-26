@@ -103,7 +103,7 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
     }
   };
 
-  const handleItemUpdate = async (sectionId: string, item: PortfolioItem) => {
+  const handleItemUpdate = async (item: PortfolioItem) => {
     if (!data) return;
     
     try {
@@ -133,7 +133,7 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
     }
   };
 
-  const handleItemDelete = async (sectionId: string, itemId: string) => {
+  const handleItemDelete = async (itemId: string) => {
     if (!data) return;
     
     try {
@@ -422,7 +422,7 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
                                 </DialogHeader>
                                 <ItemForm
                                   initialData={item}
-                                  onSave={(updatedItem) => handleItemUpdate(section.id, updatedItem)}
+                                  onSave={(updatedItem) => handleItemUpdate(updatedItem)}
                                   onCancel={() => {}}
                                 />
                               </DialogContent>
@@ -430,7 +430,7 @@ export function ContentManager({ onDataUpdate }: ContentManagerProps) {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleItemDelete(section.id, item.id)}
+                              onClick={() => handleItemDelete(item.id)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
