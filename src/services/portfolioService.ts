@@ -18,21 +18,50 @@ export class SupabasePortfolioService {
   // Profile methods
   async getProfile(): Promise<PortfolioProfile | null> {
     try {
-      const { data: profile, error: profileError } = await supabase
+      const { data: profiles, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
-        .single()
+        .select('id, name, tagline, created_at, updated_at')
+        .limit(1)
 
       if (profileError) {
         console.error('Error fetching profile:', profileError)
         return null
       }
 
+      if (!profiles || profiles.length === 0) {
+        console.warn('No profile found')
+        return null
+      }
+
+      const profile = profiles[0]
+
       const { data: sections, error: sectionsError } = await supabase
         .from('sections')
         .select(`
-          *,
-          portfolio_items (*)
+          id,
+          profile_id,
+          title,
+          order_index,
+          created_at,
+          updated_at,
+          portfolio_items (
+            id,
+            section_id,
+            title,
+            type,
+            year,
+            company,
+            location,
+            description,
+            details,
+            content,
+            url,
+            image_url,
+            tech,
+            order_index,
+            created_at,
+            updated_at
+          )
         `)
         .eq('profile_id', profile.id)
         .order('order_index')
