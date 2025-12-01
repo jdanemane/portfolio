@@ -1,6 +1,5 @@
-/* Tailwind CSS v4 custom variant - linter may not recognize this at-rule */
-@custom-variant dark (&:is(.dark *));
-
+/* Note: Tailwind CSS v4 has a built-in 'dark' variant, so @custom-variant dark should NOT be declared here.
+ * The built-in variant uses :is(.dark *) selector automatically. */
 :root {
   --font-size: 16px;
   --background: #ffffff;
@@ -410,12 +409,27 @@ div.markdown-content h6 {
 }
 
 /* Images */
-.markdown-content img {
+.markdown-content img,
+.markdown-content .markdown-image {
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  display: block;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.markdown-content img:hover,
+.markdown-content .markdown-image:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Center images that are on their own line */
+.markdown-content p:has(> img:only-child),
+.markdown-content p:has(> .markdown-image:only-child) {
+  text-align: center;
 }
 
 /* Tables */

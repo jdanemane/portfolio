@@ -400,24 +400,13 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                         >
                           <div className="flex items-start gap-3">
                             {(() => {
-                              // Direct access - try all possible paths
-                              const imageUrl = item.image_url || (item as any).image_url || '';
+                              const imageUrl = item.image_url || '';
                               const hasImage = Boolean(imageUrl && typeof imageUrl === 'string' && imageUrl.trim());
-                              
-                              // Always log for Min første rejse to debug
-                              if (item.title === 'Min første rejse') {
-                                console.log('Min første rejse thumbnail check:', {
-                                  imageUrl,
-                                  hasImage,
-                                  itemImageUrl: item.image_url,
-                                  itemKeys: Object.keys(item)
-                                });
-                              }
                               
                               if (hasImage) {
                                 return (
                                   <div 
-                                    className="flex-shrink-0 rounded-md overflow-hidden bg-gray-100 relative"
+                                    className="flex-shrink-0 rounded-md overflow-hidden bg-gray-100 relative shadow-sm"
                                     style={{ 
                                       width: '64px', 
                                       height: '64px',
@@ -425,7 +414,7 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                                       minHeight: '64px'
                                     }}
                                   >
-                                    <img
+                                    <ImageWithFallback
                                       src={imageUrl}
                                       alt={`${item.title} thumbnail`}
                                       className="w-full h-full object-cover"
@@ -434,13 +423,6 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                                         height: '64px',
                                         objectFit: 'cover',
                                         display: 'block'
-                                      }}
-                                      onError={(e) => {
-                                        console.error('Image failed to load:', imageUrl, e);
-                                        (e.target as HTMLImageElement).style.display = 'none';
-                                      }}
-                                      onLoad={() => {
-                                        console.log('Image loaded successfully:', imageUrl);
                                       }}
                                     />
                                   </div>
@@ -589,6 +571,14 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                         h4: ({node, ...props}) => <h4 {...props} />,
                         h5: ({node, ...props}) => <h5 {...props} />,
                         h6: ({node, ...props}) => <h6 {...props} />,
+                        img: ({node, src, alt, ...props}) => (
+                          <ImageWithFallback
+                            src={src || ''}
+                            alt={alt || ''}
+                            className="markdown-image"
+                            {...props}
+                          />
+                        ),
                       }}
                     >
                       {String(currentItem.details || '')}
@@ -610,6 +600,14 @@ export function ColumnNavigation({ refreshTrigger }: ColumnNavigationProps) {
                         h4: ({node, ...props}) => <h4 {...props} />,
                         h5: ({node, ...props}) => <h5 {...props} />,
                         h6: ({node, ...props}) => <h6 {...props} />,
+                        img: ({node, src, alt, ...props}) => (
+                          <ImageWithFallback
+                            src={src || ''}
+                            alt={alt || ''}
+                            className="markdown-image"
+                            {...props}
+                          />
+                        ),
                       }}
                     >
                       {String(currentItem.content || '')}
